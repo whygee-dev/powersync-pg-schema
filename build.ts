@@ -11,7 +11,7 @@ await build({
   shims: { deno: true }, // add shim for Deno globals
   package: {
     name: "powersync-pg-schema",
-    version: "0.0.2",
+    version: "0.0.3",
     description: "Generate a schema from a PostgreSQL database for Powersync",
     repository: {
       type: "git",
