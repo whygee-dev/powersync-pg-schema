@@ -15,7 +15,7 @@ await build({
     description: "Generate a schema from a PostgreSQL database for Powersync",
     repository: {
       type: "git",
-      url: "https://github.com/yourusername/yourrepo.git",
+      url: "https://github.com/whygee-dev/powersync-pg-schema",
     },
     license: "MIT",
   },
