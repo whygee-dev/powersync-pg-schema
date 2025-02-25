@@ -1,4 +1,6 @@
-import { Client } from "npm:pg";
+import pg from "npm:pg";
+
+const { Client } = pg;
 
 interface Row {
   table_name: string;
@@ -77,7 +79,7 @@ function generateKotlinSchema(tables: TableInfo[]): string {
     const idComment = sorted.some((col) => col.column_name === "id") ? "                // id column (text) is automatically included," : "";
     const colLines = sorted
       .filter((col) => col.column_name !== "id")
-      .map((col, i) => `                ${mapToPowerSyncKotlinType(col.data_type)}("${col.column_name}")${i < sorted.length - 1 ? "," : ""}`);
+      .map((col, i, arr) => `                ${mapToPowerSyncKotlinType(col.data_type)}("${col.column_name}")${i < arr.length - 1 ? "," : ""}`);
     return [
       "        Table(",
       `            name = "${table.name}",`,
@@ -148,17 +150,8 @@ function generateTypeScriptSchema(tables: TableInfo[]): string {
   return lines.join("\n");
 }
 
-export async function generateSchema(pgUrl: string, tableFilter: string, lang: "kt" | "kotlin" | "ts" | "typescript"): Promise<void> {
+export async function generateSchema(pgUrl: string, tableFilter: string, lang: "kt" | "kotlin" | "ts" | "typescript"): Promise<string> {
   const tables = await introspectDatabase(pgUrl, tableFilter);
-  if (lang === "ts" || lang === "typescript") {
-    const tsCode = generateTypeScriptSchema(tables);
-    const outputPath = "schema.ts";
-    await Deno.writeTextFile(outputPath, tsCode);
-    console.log(`TypeScript schema written to ${outputPath}`);
-  } else {
-    const kotlinCode = generateKotlinSchema(tables);
-    const outputPath = "schema.kt";
-    await Deno.writeTextFile(outputPath, kotlinCode);
-    console.log(`Kotlin schema written to ${outputPath}`);
-  }
+
+  return lang === "ts" || lang === "typescript" ? generateTypeScriptSchema(tables) : generateKotlinSchema(tables);
 }

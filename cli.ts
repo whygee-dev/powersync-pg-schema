@@ -11,7 +11,13 @@ async function cli(): Promise<void> {
   const tableFilter = typeof args.tableFilter === "string" ? args.tableFilter : "*";
   const lang = typeof args.lang === "string" ? args.lang.toLowerCase() : "kotlin";
 
-  await generateSchema(pgUrl, tableFilter, lang as "kt" | "kotlin" | "ts" | "typescript");
+  const schema = await generateSchema(pgUrl, tableFilter, lang as "kt" | "kotlin" | "ts" | "typescript");
+
+  if (lang === "ts" || lang === "typescript") {
+    await Deno.writeTextFile("schema.ts", schema);
+  } else {
+    await Deno.writeTextFile("schema.kt", schema);
+  }
 }
 
 if (import.meta.main) {
